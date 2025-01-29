@@ -1,0 +1,265 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f7f5f5;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.hidden {
+    display: none;
+}
+
+/* Welcome Page Styles */
+.policy-section {
+    margin: 20px 0;
+}
+
+.consent {
+    margin: 20px 0;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.validation-message {
+    color: #ff0000;
+    font-size: 14px;
+    margin-top: 5px;
+}
+/* Timer Styles - Updated for better visibility */
+.timer-wrapper {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    z-index: 100;
+    padding: 10px 0;
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+#timer {
+    font-size: 24px;
+    font-weight: bold;
+    padding: 15px 30px;
+    border-radius: 8px;
+    background-color: #ef0008;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 200px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#time-value {
+    font-size: 32px;
+    margin-left: 10px;
+}
+
+/* Question Styles */
+.question-container {
+    padding: 20px;
+}
+
+.options-normal {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.option {
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.option:hover {
+    background-color: #f0f0f0;
+    border-color: #2196f3;
+}
+
+.option.selected {
+    background-color: #e3f2fd;
+    border-color: #2196f3;
+}
+
+/* Table Format Options */
+.options-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 20px 0;
+}
+
+.options-table th {
+    background-color: #2196f3;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #1976d2;
+}
+
+.options-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+.options-table tr {
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.options-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+.options-table tr.selected {
+    background-color: #e3f2fd;
+}
+
+/* Likert Scale Styles */
+.likert-scale {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+}
+
+.likert-option {
+    text-align: center;
+}
+
+.likert-option input[type="radio"] {
+    display: none;
+}
+
+.likert-option label {
+    display: block;
+    width: 45px;
+    height: 45px;
+    line-height: 45px;
+    border: 2px solid #ddd;
+    border-radius: 10%;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: bold;
+}
+
+.likert-option input[type="radio"]:checked + label {
+    background-color: #2196f3;
+    color: white;
+    border-color: #1976d2;
+}
+
+/* Button Styles */
+button {
+    padding: 12px 24px;
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+button:hover:not(:disabled) {
+    background-color: #1976d2;
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    background-color: #bdbdbd;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .page {
+        padding: 20px;
+    }
+
+    #timer {
+        min-width: 150px;
+        font-size: 20px;
+    }
+
+    #time-value {
+        font-size: 28px;
+    }
+
+    .likert-option label {
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    #timer {
+        min-width: 120px;
+        font-size: 18px;
+    }
+
+    #time-value {
+        font-size: 24px;
+    }
+
+    .likert-option label {
+        width: 35px;
+        height: 35px;
+        line-height: 35px;
+    }
+}
+
+
