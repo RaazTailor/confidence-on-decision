@@ -1,4 +1,8 @@
 $(document).ready(function () {
+    // Add audio element for tick sound
+    const tickSound = new Audio('ticking-clock.mp3.mp3');
+    tickSound.volume = 0.5; // Adjust volume to 50%
+    
     showPage("welcome-page");
 
     // Welcome page - Consent checkbox and start button
@@ -45,13 +49,14 @@ $(document).ready(function () {
         }
     });
 
-    // Timer class
+    // Timer class with tick sound
     class Timer {
         constructor(duration = 0, onComplete) {
             this.duration = duration;
             this.remaining = duration;
             this.onComplete = onComplete;
             this.isRunning = false;
+            this.isTickingStarted = false;
         }
 
         start() {
@@ -66,6 +71,12 @@ $(document).ready(function () {
             if (this.isRunning) {
                 this.isRunning = false;
                 clearInterval(this.interval);
+                // Stop the ticking sound if it's playing
+                if (this.isTickingStarted) {
+                    tickSound.pause();
+                    tickSound.currentTime = 0;
+                    this.isTickingStarted = false;
+                }
                 return this.getElapsedTime();
             }
             return 0;
@@ -75,6 +86,19 @@ $(document).ready(function () {
             if (this.duration > 0) {
                 this.remaining = Math.max(0, this.duration - Math.floor((Date.now() - this.startTime) / 1000));
                 $("#time-value").text(this.remaining);
+
+                // Start ticking when 10 seconds or less remain
+                if (this.remaining <= 10 && !this.isTickingStarted) {
+                    this.isTickingStarted = true;
+                    tickSound.play();
+                    // Set up looping for the tick sound
+                    tickSound.addEventListener('ended', function() {
+                        if (this.remaining > 0) {
+                            this.currentTime = 0;
+                            this.play();
+                        }
+                    });
+                }
 
                 if (this.remaining === 0) {
                     this.stop();
@@ -87,6 +111,9 @@ $(document).ready(function () {
             return Math.floor((Date.now() - this.startTime) / 1000);
         }
     }
+
+    // Rest of your existing code remains exactly the same...
+    // [... Rest of the existing code ...]
 
     // Question display function
     function displayQuestion(question) {
@@ -374,6 +401,9 @@ $(document).ready(function () {
         $table.append($tbody);
         container.append($table);
     }
+
+
+    
     
     // Questions data structure
    
@@ -381,40 +411,38 @@ $(document).ready(function () {
 const questions = [
    // Randomized JavaScript Code for 14 Questions
 
-// Pair 6 (Time-Limit Version): Art Exhibit
+// Q13: Research Grants (Time-Free)
 {
-    id: 12,
-    text: "Q12. Sponsors are asking for an immediate decision on the main highlight for an upcoming cultural event:",
-    headers: ["Category", "Description", "Cost", "Audience Appeal"],
+    id: 13,
+    text: "Q13. As a member of the selection committee, you are responsible for awarding a research grant to the project with the highest potential impact. Carefully evaluate the options and choose the most deserving one.",
     options: [
-        ["Light Projections", "Immersive light and sound shows", "₹15 Lakh", "Very High"],
-        ["Interactive Installations", "Live painting and wall art creation", "₹10 Lakh", "High"],
-        ["Augmented Reality", "AR stations for children and families", "₹12 Lakh", "High"],
-        ["Musical Performances", "Music synced with visuals", "₹20 Lakh", "Very High"],
-        ["Eco-Friendly Art", "Exhibits using recycled materials", "₹8 Lakh", "Medium"],
-        ["Cultural Artifacts", "Historical displays from local traditions", "₹7 Lakh", "Medium"]
-    ],
-    displayType: "table",
-    background: "#ff0000",
-    timeLimit: 50
-},
-
-// Pair 1 (Time-Free Version): Financial Bonus
-{
-    id: 1,
-    text: "Q1. You have received a one-time bonus of ₹50,000. Decide how to allocate it for maximum benefit:",
-    options: [
-        "Invest the full amount in a fixed deposit for long-term savings.",
-        "Divide the bonus equally between savings and family expenses.",
-        "Use the bonus to repay an ongoing debt.",
-        "Spend the bonus on buying essential work tools for personal improvement."
+        " Strategies to mitigate climate change in urban environments.",
+        "AI-driven solutions to improve education in rural areas.",
+        "Research on alternative clean energy sources.",
+        "Genomics advancements for personalized medical treatments."
     ],
     displayType: "normal",
     background: "#fdee98",
     timeLimit: 0
 },
 
-// Pair 4 (Time-Limit Version): Startup Funding
+// Q4: Disaster Relief (Time-Limit)
+{
+    id: 4,
+    text: "Q4. A natural disaster has struck, and you must decide where to send resources first. Which region will you choose?",
+    headers: ["Region", "People Affected", "Urgency Level", "Main Need", "Ease of Access"],
+    options: [
+        ["Region A", "Very Large Population", "Critical (Life-threatening)", "Emergency Medical Help", "Easily Accessible"],
+        ["Region B", "Medium Population", "High (Serious Concern)", "Food Supplies", "Moderately Accessible"],
+        ["Region C", "Small Population", "Moderate (Can Wait)", "Clean Water Supply", "Hard to Reach"],
+        ["Region D", "Large Population", "Very High (Urgent)", "Temporary Shelter", "Easily Accessible"]
+    ],
+    displayType: "table",
+    background: "#ff0000",
+    timeLimit: 75
+},
+
+// Q8: Startup Funding (Time-Limit)
 {
     id: 8,
     text: "Q8. You are asked to recommend one startup proposal to an investment committee:",
@@ -429,71 +457,23 @@ const questions = [
     timeLimit: 50
 },
 
-// Pair 3 (Time-Free Version): Disaster Relief
+// Q3: Disaster Relief (Time-Free)
 {
     id: 3,
-    text: "Q3. You are planning disaster relief resource allocation. Compare the options:",
-    headers: ["Region", "Population", "Urgency", "Accessibility", "Resources Needed"],
+    text: "Q3. You are a member of rescue team, there is a house on fire unfortunately a child is still inside the house, what do you do?",
+    headers: [ "Action", "Risk Level", "Response Speed", "Team Coordination", "Effectiveness"],
     options: [
-        ["Urban Area", "High", "High", "Easy", "Food and medical aid"],
-        ["Rural Area", "Moderate", "Very High", "Hard", "Water and rescue"],
-        ["Coastal Region", "Low", "Moderate", "Very Hard", "Temporary shelters"],
-        ["Mountainous Area", "Moderate", "High", "Very Hard", "Rescue equipment"]
+        [ "Enter the burning house without any second thought", "Very High", "Very Fast", "Low", "Uncertain (high risk to rescuer)"],
+        [ "Take a few seconds to assess the situation then decide", "Moderate", "Moderate", "Medium", "High (better situational awareness)"],
+        [ "Inform the other team members on call", "Low", "Slow", "High", "Moderate (delays immediate action)"],
+        [ "Do not enter until you find help", "Low", "Very Slow", "High", "Low (delays rescue significantly)"]
     ],
     displayType: "table",
     background: "#fdee98",
     timeLimit: 0
 },
 
-// Pair 5 (Time-Limit Version): Healthcare
-{
-    id: 10,
-    text: "Q10. A medical emergency has been reported after an epidemic outbreak in a remote village. Choose the most urgent priority:",
-    headers: ["Category", "Description", "Urgency", "Cost"],
-    options: [
-        ["Mobile Vans", "Deploy medical vans immediately", "High", "₹10 Cr"],
-        ["Emergency Hospitals", "Set up temporary shelter hospitals", "Very High", "₹20 Cr"],
-        ["Food & Water", "Provide essential supplies", "Medium", "₹5 Cr"],
-        ["Transport", "Shift critical patients to cities", "High", "₹12 Cr"],
-        ["Manpower", "Recruit additional doctors/nurses", "High", "₹15 Cr"],
-        ["Awareness Campaign", "Spread health education", "Low", "₹3 Cr"]
-    ],
-    displayType: "table",
-    background: "#ff0000",
-    timeLimit: 60
-},
-
-// Pair 7 (Time-Free Version): Research Grants
-{
-    id: 13,
-    text: "Q13. You are reviewing proposals for a research grant program. Select the most impactful project:",
-    options: [
-        "Research on combating climate change in urban areas.",
-        "Development of AI to improve education in rural schools.",
-        "Exploration of clean energy alternatives.",
-        "Genomics research for personalized medicine."
-    ],
-    displayType: "normal",
-    background: "#fdee98",
-    timeLimit: 0
-},
-
-// Pair 2 (Time-Limit Version): Mentorship
-{
-    id: 7,
-    text: "Q7. You are at a networking event and must quickly approach one individual as a potential mentor:",
-    options: [
-        "A senior manager with years of experience.",
-        "An entrepreneur with recent successful ventures.",
-        "A professor with deep theoretical knowledge.",
-        "A motivational speaker with energy and enthusiasm."
-    ],
-    displayType: "normal",
-    background: "#ff0000",
-    timeLimit: 50
-},
-
-// Pair 6 (Time-Free Version): Art Exhibit
+// Q11: Art Exhibit (Time-Free)
 {
     id: 11,
     text: "Q11. You are curating an art exhibit and must select installations based on creativity and audience engagement:",
@@ -510,70 +490,98 @@ const questions = [
     timeLimit: 0
 },
 
-// Pair 1 (Time-Limit Version): Financial Bonus
+// Q2: Financial Bonus (Time-Limit)
 {
     id: 2,
-    text: "Q2. Your employer gives you ₹50,000 as a surprise bonus, with the condition to spend it all by the end of the day. What do you do?",
+    text: "Q2. Your employer gives you ₹1Lakh as a surprise bonus, with the condition to spend it all by the end of the day. What do you do?",
     options: [
-        "Buy new electronics for personal or work use.",
-        "Host a celebration dinner for family and friends.",
+        "Buy something you wished to buy since a long time.",
+        "invest it in stocks or mutual funds.",
         "Donate the amount to a well-known charity.",
-        "Pay off small, pending bills or debts."
-    ],
-    displayType: "normal",
-    background: "#ff0000",
-    timeLimit: 60
-},
-
-// Pair 3 (Time-Limit Version): Disaster Relief
-{
-    id: 4,
-    text: "Q4. A natural disaster occurs, and urgent decisions are required to allocate resources:",
-    headers: ["Region", "Population", "Urgency", "Resources Needed", "Accessibility"],
-    options: [
-        ["Region A", "Very High", "Critical", "Medical teams", "Easy"],
-        ["Region B", "Moderate", "High", "Food supplies", "Moderate"],
-        ["Region C", "Low", "Moderate", "Water tanks", "Hard"],
-        ["Region D", "High", "Very High", "Temporary housing", "Easy"]
-    ],
-    displayType: "table",
-    background: "#ff0000",
-    timeLimit: 60
-},
-
-// Pair 5 (Time-Free Version): Healthcare
-{
-    id: 9,
-    text: "Q9. You are planning the budget for improving the healthcare system in rural areas. Where will you focus most of the funding?",
-    headers: ["Category", "Description", "Impact", "Cost"],
-    options: [
-        ["Primary Care", "Construct healthcare centers", "High", "₹20 Cr"],
-        ["Training", "Hire and train doctors/nurses", "Moderate", "₹10 Cr"],
-        ["Equipment", "Provide advanced surgical tools", "High", "₹25 Cr"],
-        ["Ambulance Services", "Increase ambulance services", "Medium", "₹15 Cr"],
-        ["Prevention", "Launch vaccination programs", "Low", "₹5 Cr"]
-    ],
-    displayType: "table",
-    background: "#fdee98",
-    timeLimit: 0
-},
-
-// Pair 7 (Time-Limit Version): Research Grants
-{
-    id: 14,
-    text: "Q14. The grant committee is split, and you must make the final decision on funding one project:",
-    options: [
-        "AI-based education models for underserved communities.",
-        "Research on gene editing for cancer treatments.",
-        "Development of sustainable farming technologies.",
-        "Quantum computing advancements for secure communications."
+        "Take out an insurance policy."
     ],
     displayType: "normal",
     background: "#ff0000",
     timeLimit: 50
 },
 
-// Pair 4 (Time-Free Version): Startup Funding
+// Q7: Mentorship (Time-Limit)
+{
+    id: 7,
+    text: "Q7. You are at a networking event and must quickly approach one individual as a potential mentor:",
+    options: [
+        "A senior manager with years of experience.",
+        "An entrepreneur with recent successful ventures.",
+        "A professor with deep theoretical knowledge.",
+        "A motivational speaker with energy and enthusiasm."
+    ],
+    displayType: "normal",
+    background: "#ff0000",
+    timeLimit: 50
+},
+
+// Q14: Research Grants (Time-Limit)
+{
+    id: 14,
+    text: "Q14.Your company has decided to fund a project and you must make the final decision. Choose the most profitable project.",
+    options: [
+        "AI-powered education models for underserved communities.",
+        "Gene-editing research for innovative cancer treatments.",
+        "Sustainable farming technologies for food security and environmental benefits.",
+        "Quantum computing advancements for secure communication."
+    ],
+    displayType: "normal",
+    background: "#ff0000",
+    timeLimit: 50
+},
+
+// Q5: Mentorship (Time-Free)
+{
+    id: 5,
+    text: "Q5. You are selecting a career mentor for a year-long program. Choose the mentor based on your goals:",
+    options: [
+        "A highly experienced industry expert but with limited availability.",
+        "A coach with moderate experience but offering frequent sessions.",
+        "A university professor with excellent academic insights but no industry exposure.",
+        "A rising professional known for innovative approaches."
+    ],
+    displayType: "normal",
+    background: "#fdee98",
+    timeLimit: 0
+},
+
+// Q10: Healthcare System (Time-Limit)
+{
+    id: 10,
+    text: "Q10. Your team is facing a disagreement on how to solve a critical problem, and everyone is looking to you for the final decision. What would you do?",
+    headers: ["Decision Approach", "Pros", "Cons", "Effectiveness"],
+    options: [
+        ["Hold a quick vote but allow time for discussion", "Encourages participation & fairness", "Might not always lead to the best solution", "Moderate"],
+        ["Consult an expert or senior leader before deciding", "Brings in experienced insight", "May reduce team autonomy", "High"],
+        ["Assign a small group to evaluate and suggest the best option", "Ensures thorough analysis", "Can slow down the process", "Moderate"],
+        ["Set a time limit for discussion and make a firm decision", "Keeps things efficient", "Risk of missing important details", "Medium"]
+    ],
+    displayType: "table",
+    background: "#ff0000",
+    timeLimit: 75
+},
+
+// Q1: Financial Bonus (Time-Free)
+{
+    id: 1,
+    text: "Q1. You have received a one-time bonus of ₹50,000. Decide how you use it for maximum benefit:",
+    options: [
+        "Invest the full amount in a fixed deposit for long-term savings.",
+        "Divide the bonus equally between savings and family expenses.",
+        "Use the bonus to repay an ongoing loan.",
+        "Spend the bonus on buying essential work tools for personal improvement."
+    ],
+    displayType: "normal",
+    background: "#fdee98",
+    timeLimit: 0
+},
+
+// Q6: Startup Funding (Time-Free)
 {
     id: 6,
     text: "Q6. You are reviewing startup proposals to select the most promising investment:",
@@ -586,6 +594,39 @@ const questions = [
     displayType: "normal",
     background: "#fdee98",
     timeLimit: 0
+},
+
+// Q9: Healthcare System (Time-Free)
+{
+    id: 9,
+    text: "Q9. Your team disagrees on how to solve a problem, and everyone is looking to you for the final decision. What should you do?",
+    headers: ["Decision Approach", "Pros", "Cons", "Effectiveness"],
+    options: [
+        ["Go with the majority opinion to maintain harmony", "Quick resolution, avoids conflict", "Might overlook better solutions", "Moderate"],
+        ["Consider all perspectives, seek more input if needed, then decide", "Ensures a well-balanced decision, promotes fairness", "Takes more time", "High"],
+        ["Stay neutral and let the team sort it out", "Avoids personal bias", "Can lead to delays and unresolved issues", "Low"],
+        ["Choose the first suggestion to save time", "Fastest way to move forward", "May result in poor decision-making", "Low"]
+    ],
+    displayType: "table",
+    background: "#fdee98",
+    timeLimit: 0
+},
+
+// Q12: Art Exhibit (Time-Limit)
+{
+    id: 12,
+    text: "Q12. Sponsors are asking for an immediate decision on the main highlight for an upcoming cultural event what you will choose:",
+    headers: ["Category", "Description", "Cost", "Audience Appeal"],
+    options: [
+        ["Interactive Installations", "Live painting and wall art creation", "₹10 Lakh", "Very High"],
+        ["Augmented Reality", "AR stations for children and families", "₹12 Lakh", "High"],
+        ["Musical Performances", "Music synced with visuals", "₹20 Lakh", "Low"],
+        ["Eco-Friendly Art", "Exhibits using recycled materials", "₹8 Lakh", "Medium"],
+        ["Cultural Artifacts", "Historical displays from local traditions", "₹7 Lakh", "Medium"]
+    ],
+    displayType: "table",
+    background: "#ff0000",
+    timeLimit: 75  
 }
 ];
 
